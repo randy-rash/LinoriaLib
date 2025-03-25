@@ -8,6 +8,7 @@ local TweenService = game:GetService('TweenService');
 local RenderStepped = RunService.RenderStepped;
 local LocalPlayer = Players.LocalPlayer;
 local Mouse = LocalPlayer:GetMouse();
+local Toggled = false;
 
 local ProtectGui = protectgui or (syn and syn.protect_gui) or (function() end);
 
@@ -1281,8 +1282,8 @@ do
             end;
         end);
 
-        Library:GiveSignal(InputService.InputBegan:Connect(function(Input)
-            if (not Picking) then
+        Library:GiveSignal(InputService.InputBegan:Connect(function(Input, gameProcessedEvent)
+            if (not Picking) and not gameProcessedEvent then
                 if KeyPicker.Mode == 'Toggle' then
                     local Key = KeyPicker.Value;
 
@@ -2538,6 +2539,14 @@ do
             end;
         end);
 
+        RunService.RenderStepped:Connect(function()
+            pcall(function()
+                if Toggled == false then
+                    Dropdown:CloseDropdown()
+                end 
+            end)
+        end)
+
         InputService.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 then
                 local AbsPos, AbsSize = ListOuter.AbsolutePosition, ListOuter.AbsoluteSize;
@@ -3504,7 +3513,6 @@ function Library:CreateWindow(...)
     });
 
     local TransparencyCache = {};
-    local Toggled = false;
     local Fading = false;
 
     function Library:Toggle()
@@ -3602,13 +3610,17 @@ function Library:CreateWindow(...)
         Fading = false;
     end
 
-    Library:GiveSignal(InputService.InputBegan:Connect(function(Input, Processed)
+    Library:GiveSignal(InputService.InputBegan:Connect(function(Input,gameProcessedEvent)
         if type(Library.ToggleKeybind) == 'table' and Library.ToggleKeybind.Type == 'KeyPicker' then
             if Input.UserInputType == Enum.UserInputType.Keyboard and Input.KeyCode.Name == Library.ToggleKeybind.Value then
+                if not gameProcessedEvent then
+                    task.spawn(Library.Toggle)
+                end
+            end
+        elseif Input.KeyCode == Enum.KeyCode.RightControl or (Input.KeyCode == Enum.KeyCode.RightShift and (not UserInputService:IsKeyDown(Enum.KeyCode.Return))) then
+            if not gameProcessedEvent then
                 task.spawn(Library.Toggle)
             end
-        elseif Input.KeyCode == Enum.KeyCode.RightControl or (Input.KeyCode == Enum.KeyCode.RightShift and (not Processed)) then
-            task.spawn(Library.Toggle)
         end
     end))
 
