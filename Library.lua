@@ -1282,8 +1282,8 @@ do
             end;
         end);
 
-        Library:GiveSignal(InputService.InputBegan:Connect(function(Input, gameProcessedEvent)
-            if (not Picking) and not gameProcessedEvent then
+        Library:GiveSignal(InputService.InputBegan:Connect(function(Input,GamepRoccessed)
+            if (not Picking) and not GamepRoccessed then
                 if KeyPicker.Mode == 'Toggle' then
                     local Key = KeyPicker.Value;
 
@@ -3610,15 +3610,15 @@ function Library:CreateWindow(...)
         Fading = false;
     end
 
-    Library:GiveSignal(InputService.InputBegan:Connect(function(Input,gameProcessedEvent)
+    Library:GiveSignal(InputService.InputBegan:Connect(function(Input,GamepRoccessed)
         if type(Library.ToggleKeybind) == 'table' and Library.ToggleKeybind.Type == 'KeyPicker' then
             if Input.UserInputType == Enum.UserInputType.Keyboard and Input.KeyCode.Name == Library.ToggleKeybind.Value then
-                if not gameProcessedEvent then
+                if not GamepRoccessed then
                     task.spawn(Library.Toggle)
                 end
             end
         elseif Input.KeyCode == Enum.KeyCode.RightControl or (Input.KeyCode == Enum.KeyCode.RightShift and (not UserInputService:IsKeyDown(Enum.KeyCode.Return))) then
-            if not gameProcessedEvent then
+            if not GamepRoccessed then
                 task.spawn(Library.Toggle)
             end
         end
